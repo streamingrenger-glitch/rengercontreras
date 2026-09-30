@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renzo Contreras — Editor de Video &amp; Creador Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0c0d12;
+    --bg-panel: #15161f;
+    --bg-panel-alt: #1c1e2a;
+    --text: #edecf3;
+    --text-muted: #8d8fa3;
+    --text-dim: #5c5e70;
+    --accent-red: #ff4d4d;
+    --accent-cyan: #4fe0c7;
+    --border: rgba(237,236,243,0.09);
+    --border-strong: rgba(237,236,243,0.16);
+    --radius-sm: 3px;
+    --radius-md: 6px;
+    --serif: "Bricolage Grotesque", sans-serif;
+    --sans: "Inter", sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  ::selection{background:var(--accent-red); color:#0c0d12;}
+  :focus-visible{outline:2px solid var(--accent-cyan); outline-offset:3px;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  h1,h2,h3{font-family:var(--serif); font-weight:700; letter-spacing:-0.01em;}
+
+  /* ---------- NAV ---------- */
+  header.site-nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(12,13,18,0.72);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    max-width:1180px; margin:0 auto; padding:0 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:68px;
+  }
+  .nav-logo{font-family:var(--serif); font-weight:700; font-size:1.05rem; letter-spacing:0.01em;}
+  .nav-logo span{color:var(--accent-red);}
+  nav.nav-links{display:flex; gap:28px;}
+  nav.nav-links a{
+    font-size:0.87rem; color:var(--text-muted); font-weight:500;
+    padding:6px 2px; border-bottom:1px solid transparent;
+    transition:color .2s ease, border-color .2s ease;
+  }
+  nav.nav-links a:hover{color:var(--text); border-color:var(--accent-red);}
+  .nav-cta{
+    font-size:0.82rem; font-weight:600; padding:9px 18px;
+    background:var(--text); color:var(--bg);
+    border-radius:100px;
+  }
+  .nav-toggle{display:none; flex-direction:column; gap:4px; background:none; border:none; cursor:pointer; padding:8px;}
+  .nav-toggle span{width:22px; height:2px; background:var(--text);}
+  @media (max-width:860px){
+    nav.nav-links{ position:fixed; top:68px; left:0; right:0; background:var(--bg-panel);
+      flex-direction:column; padding:18px 24px 28px; gap:4px; border-bottom:1px solid var(--border);
+      transform:translateY(-8px); opacity:0; pointer-events:none; transition:.2s ease;}
+    nav.nav-links.open{transform:translateY(0); opacity:1; pointer-events:auto;}
+    nav.nav-links a{padding:12px 4px; border-bottom:1px solid var(--border);}
+    .nav-cta{display:none;}
+    .nav-toggle{display:flex;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; min-height:100svh; display:flex; align-items:center;
+    padding:120px 0 80px; overflow:hidden;
+  }
+  .hero-bg{position:absolute; inset:0; z-index:0; opacity:0.55;}
+  .hero-inner{position:relative; z-index:2;}
+  .hero-eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-size:0.82rem; color:var(--text-muted); margin-bottom:26px;
+  }
+  .rec-dot{width:8px; height:8px; border-radius:50%; background:var(--accent-red); animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.25;}}
+  .hero h1{
+    font-size:clamp(2.8rem, 8vw, 6.2rem);
+    line-height:0.96;
+    text-transform:uppercase;
+    color:var(--text);
+  }
+  .hero h1 em{font-style:normal; color:var(--accent-cyan);}
+  .hero-role{
+    font-family:var(--sans); font-size:clamp(1rem,2.4vw,1.35rem);
+    color:var(--text-muted); font-weight:500; margin-top:18px; max-width:640px;
+  }
+  .hero-tag{
+    margin-top:22px; font-size:1.05rem; color:var(--text); max-width:520px;
+    border-left:2px solid var(--accent-red); padding-left:16px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:44px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 26px; border-radius:100px; font-weight:600; font-size:0.92rem;
+    cursor:pointer; border:1px solid transparent; transition:transform .15s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--accent-red); color:#150506;}
+  .btn-primary:hover{background:#ff6363;}
+  .btn-ghost{border-color:var(--border-strong); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--accent-cyan); color:var(--accent-cyan);}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:120px 0;}
+  @media (max-width:640px){ section{padding:80px 0;} }
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-kicker{color:var(--accent-red); font-size:0.85rem; font-weight:600; margin-bottom:12px;}
+  .section-head h2{font-size:clamp(1.9rem,4vw,2.7rem); text-transform:uppercase; line-height:1.05;}
+  .section-head p{color:var(--text-muted); margin-top:16px; font-size:1.02rem; max-width:520px;}
+
+  /* ---------- SOBRE MI ---------- */
+  .about{border-top:1px solid var(--border);}
+  .about-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:64px; align-items:start;}
+  @media (max-width:900px){ .about-grid{grid-template-columns:1fr; gap:48px;} }
+  .about-copy p{color:var(--text-muted); font-size:1.06rem; margin-bottom:18px; max-width:540px;}
+  .about-copy strong{color:var(--text); font-weight:600;}
+  .stat-row{display:flex; gap:40px; margin-top:36px; flex-wrap:wrap;}
+  .stat b{font-family:var(--serif); font-size:2.1rem; display:block; color:var(--accent-cyan);}
+  .stat span{color:var(--text-dim); font-size:0.82rem;}
+
+  .tools-label{font-size:0.85rem; color:var(--text-dim); margin-bottom:14px; letter-spacing:0.02em;}
+  .tool-group{margin-bottom:28px;}
+  .tool-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+  .tool-card{
+    border:1px solid var(--border); background:var(--bg-panel);
+    border-radius:var(--radius-md); padding:14px 16px;
+    display:flex; align-items:center; gap:10px; font-size:0.9rem; font-weight:500;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .tool-card:hover{border-color:var(--border-strong); background:var(--bg-panel-alt);}
+  .tool-dot{width:6px; height:6px; border-radius:50%; flex-shrink:0;}
+  .tool-dot.video{background:var(--accent-cyan);}
+  .tool-dot.audio{background:var(--accent-red);}
+
+  /* ---------- SERVICIOS ---------- */
+  .services{background:var(--bg-panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
+  .service-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border);}
+  @media (max-width:900px){ .service-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .service-grid{grid-template-columns:1fr;} }
+  .service-card{
+    background:var(--bg-panel); padding:36px 30px; min-height:220px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    transition:background .25s ease;
+  }
+  .service-card:hover{background:var(--bg-panel-alt);}
+  .service-icon{font-size:1.6rem; margin-bottom:28px;}
+  .service-card h3{font-family:var(--sans); font-size:1.08rem; font-weight:700; margin-bottom:10px;}
+  .service-card p{color:var(--text-muted); font-size:0.92rem;}
+
+  /* ---------- IA SECTION ---------- */
+  .ia-section{position:relative;}
+  .ia-panel{
+    border:1px solid var(--border-strong); border-radius:16px;
+    background:radial-gradient(circle at 15% 20%, rgba(79,224,199,0.08), transparent 55%), var(--bg-panel);
+    padding:56px; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;
+  }
+  @media (max-width:860px){ .ia-panel{grid-template-columns:1fr; padding:36px 26px;} }
+  .ia-copy h2{font-size:clamp(1.7rem,3.6vw,2.3rem); text-transform:uppercase; line-height:1.08; margin-bottom:18px;}
+  .ia-copy p{color:var(--text-muted); font-size:1.02rem; margin-bottom:24px; max-width:460px;}
+  .ia-list{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+  .ia-list li{
+    list-style:none; font-size:0.86rem; color:var(--text-muted);
+    border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px;
+  }
+
+  /* ---------- PORTFOLIO ---------- */
+  .filter-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:40px;}
+  .filter-chip{
+    font-size:0.82rem; padding:8px 16px; border-radius:100px; border:1px solid var(--border-strong);
+    color:var(--text-muted); cursor:pointer; background:transparent; font-weight:500; transition:.2s ease;
+  }
+  .filter-chip.active, .filter-chip:hover{border-color:var(--accent-cyan); color:var(--text); background:rgba(79,224,199,0.08);}
+  .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:900px){ .gallery{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .gallery{grid-template-columns:1fr;} }
+  .gallery-item{
+    position:relative; aspect-ratio:4/5; border-radius:var(--radius-md); overflow:hidden;
+    background:linear-gradient(155deg, var(--bg-panel-alt), var(--bg-panel));
+    border:1px solid var(--border); cursor:pointer;
+  }
+  .gallery-item .cat{position:absolute; top:16px; left:16px; font-size:0.72rem; color:var(--text-dim); z-index:2; background:rgba(12,13,18,0.55); padding:3px 8px; border-radius:100px;}
+  .gallery-item.has-controls .title-top{
+    position:absolute; top:16px; right:16px; z-index:2; font-size:0.82rem; font-weight:700;
+    background:rgba(12,13,18,0.55); padding:4px 10px; border-radius:100px; pointer-events:none;
+  }
+  .gallery-item.has-controls .fake-thumb, .gallery-item.has-controls .play-ring{display:none;}
+  .gallery-item.has-controls video{cursor:default;}
+  .gallery-item.has-controls{cursor:default;}
+  .gallery-item .fake-thumb{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0.5;}
+  .gallery-item video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .gallery-item .play-ring{
+    width:56px; height:56px; border-radius:50%; border:1.5px solid var(--border-strong);
+    display:flex; align-items:center; justify-content:center; position:relative; z-index:2;
+    transition:transform .25s ease, border-color .25s ease;
+    background:rgba(12,13,18,0.35);
+  }
+  .gallery-item .play-ring::after{
+    content:""; width:0; height:0; border-top:7px solid transparent; border-bottom:7px solid transparent;
+    border-left:11px solid var(--text); margin-left:3px;
+  }
+  .gallery-item:hover .play-ring{transform:scale(1.12); border-color:var(--accent-red);}
+  .gallery-item.playing .play-ring{display:none;}
+  .gallery-item .overlay{
+    position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:20px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.75), transparent 55%);
+    pointer-events:none;
+  }
+  .gallery-item .overlay h4{font-family:var(--sans); font-size:0.95rem; font-weight:700;}
+  .gallery-item .overlay span{font-size:0.78rem; color:var(--text-muted);}
+
+  /* ---------- PRECIOS ---------- */
+  .pricing{background:var(--bg-panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border);}
+  .price-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:900px){ .price-grid{grid-template-columns:1fr; max-width:420px; margin:0 auto;} }
+  .price-card{
+    border:1px solid var(--border-strong); border-radius:14px; padding:34px 28px;
+    background:var(--bg); display:flex; flex-direction:column;
+  }
+  .price-card.featured{border-color:var(--accent-red); background:linear-gradient(165deg, rgba(255,77,77,0.07), var(--bg));}
+  .price-tag{font-size:0.78rem; color:var(--accent-cyan); font-weight:600; margin-bottom:14px;}
+  .price-card h3{font-family:var(--sans); font-size:1.1rem; font-weight:700; margin-bottom:6px;}
+  .price-amount{font-family:var(--serif); font-size:2.6rem; margin:14px 0 22px; color:var(--text);}
+  .price-amount span{font-size:1.1rem; color:var(--text-dim); font-weight:400;}
+  .price-card ul{list-style:none; margin-bottom:28px; flex-grow:1;}
+  .price-card li{
+    font-size:0.88rem; color:var(--text-muted); padding:9px 0; border-top:1px solid var(--border);
+  }
+  .price-card li:first-child{border-top:none;}
+  .price-card .btn{width:100%; justify-content:center;}
+
+  /* ---------- CONTACTO ---------- */
+  .contact{text-align:left; position:relative;}
+  .contact-inner{
+    border-top:1px solid var(--border); padding-top:80px;
+    display:flex; flex-direction:column; align-items:flex-start;
+  }
+  .contact h2{font-size:clamp(2.1rem,6vw,4rem); text-transform:uppercase; line-height:1.02; max-width:780px;}
+  .contact p.lead{color:var(--text-muted); font-size:1.08rem; margin:22px 0 40px; max-width:480px;}
+  .contact-links{display:flex; gap:14px; flex-wrap:wrap;}
+
+  footer{border-top:1px solid var(--border); padding:32px 0; }
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  footer p{color:var(--text-dim); font-size:0.8rem;}
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#inicio" class="nav-logo">RENZO<span>.</span>CONTRERAS</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#inicio">Inicio</a>
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#precios">Precios</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <a href="#contacto" class="nav-cta">Pedir presupuesto</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <svg class="hero-bg" id="heroSvg" viewBox="0 0 1180 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="wrap hero-inner">
+    <div class="hero-eyebrow"><span class="rec-dot"></span> Disponible para nuevos proyectos</div>
+    <h1>Renzo<br>Contreras</h1>
+    <p class="hero-role">Editor de video &amp; creador digital — <em style="color:var(--text-muted); font-style:normal;">5 años de experiencia</em></p>
+    <p class="hero-tag">Transformo tus ideas en contenido que se destaca: edición, animación, voz en off e inteligencia artificial, todo en un mismo lugar.</p>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn btn-primary">Ver mi portfolio</a>
+      <a href="#contacto" class="btn btn-ghost">Pedir presupuesto</a>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="sobre-mi">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-kicker">Sobre mí</div>
+      <h2>Cinco años editando historias que se ven y se escuchan bien</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-copy">
+        <p>Soy <strong>Renzo Contreras</strong>, editor de video con 5 años de experiencia. Creo videos dinámicos, modernos y atractivos para redes sociales, emprendimientos, marcas y proyectos personales.</p>
+        <p>Trabajo con edición profesional, efectos visuales, filtros, transiciones, música, subtítulos y animaciones — y sumo herramientas de inteligencia artificial para llevar cada proyecto más lejos.</p>
+        <p>También me encargo del lado sonoro: <strong>grabo voz en off real</strong> y mezclo y edito audio con <strong>Pro Tools</strong> y <strong>Cubase 10</strong>, para que tu video no solo se vea bien, también suene profesional.</p>
+        <div class="stat-row">
+          <div class="stat"><b>5+</b><span>Años de experiencia</span></div>
+          <div class="stat"><b>8</b><span>Herramientas de trabajo</span></div>
+          <div class="stat"><b>100%</b><span>Contenido a medida</span></div>
+        </div>
+      </div>
+      <div class="about-tools">
+        <p class="tools-label">Herramientas que uso para llevar tu contenido al siguiente nivel</p>
+        <div class="tool-group">
+          <div class="tool-grid">
+            <div class="tool-card"><span class="tool-dot video"></span>CapCut</div>
+            <div class="tool-card"><span class="tool-dot video"></span>DaVinci Resolve</div>
+            <div class="tool-card"><span class="tool-dot video"></span>Adobe Premiere Pro</div>
+            <div class="tool-card"><span class="tool-dot video"></span>Canva</div>
+            <div class="tool-card"><span class="tool-dot audio"></span>Pro Tools</div>
+            <div class="tool-card"><span class="tool-dot audio"></span>Cubase 10</div>
+            <div class="tool-card"><span class="tool-dot video"></span>Herramientas de IA</div>
+            <div class="tool-card"><span class="tool-dot video"></span>Redes sociales</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="servicios">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-kicker">Servicios</div>
+      <h2>Todo lo que necesita tu contenido para destacar</h2>
+      <p>Desde la edición hasta el sonido, cada proyecto pasa por el mismo estándar de calidad.</p>
+    </div>
+  </div>
+  <div class="service-grid">
+    <div class="service-card">
+      <div><div class="service-icon">🎬</div><h3>Edición de videos</h3></div>
+      <p>Videos para TikTok, Instagram Reels, YouTube Shorts, Facebook y otras plataformas.</p>
+    </div>
+    <div class="service-card">
+      <div><div class="service-icon">✨</div><h3>Videos dinámicos</h3></div>
+      <p>Efectos, filtros, transiciones, zooms, animaciones, subtítulos y sincronización con música.</p>
+    </div>
+    <div class="service-card">
+      <div><div class="service-icon">🎙️</div><h3>Voz en off y audio profesional</h3></div>
+      <p>Grabación de voz en off real, más mezcla y edición de audio con Pro Tools y Cubase 10.</p>
+    </div>
+    <div class="service-card">
+      <div><div class="service-icon">🤖</div><h3>Contenido con Inteligencia Artificial</h3></div>
+      <p>Uso IA de forma avanzada para ayudar a emprendedores a crear contenido sin necesidad de aparecer frente a cámara.</p>
+    </div>
+    <div class="service-card">
+      <div><div class="service-icon">🌐</div><h3>Diseño de páginas web</h3></div>
+      <p>Creación de páginas web profesionales para emprendimientos, marcas y negocios.</p>
+    </div>
+    <div class="service-card">
+      <div><div class="service-icon">🚀</div><h3>Landing Pages</h3></div>
+      <p>Landing pages modernas enfocadas en presentar productos, servicios y generar conversiones.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ia-section" id="ia">
+  <div class="wrap">
+    <div class="ia-panel">
+      <div class="ia-copy">
+        <h2>¿No querés aparecer en cámara? La IA puede ayudarte</h2>
+        <p>Creo contenido utilizando herramientas de inteligencia artificial para emprendedores que quieren promocionar sus productos o servicios sin tener que aparecer frente a una cámara.</p>
+        <a href="#contacto" class="btn btn-primary">Quiero mi video con IA</a>
+      </div>
+      <ul class="ia-list">
+        <li>Avatares digitales</li>
+        <li>Videos promocionales</li>
+        <li>Voz en off real o con IA</li>
+        <li>Imágenes generadas con IA</li>
+        <li>Animaciones</li>
+        <li>Contenido para redes sociales</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-kicker">Portfolio</div>
+      <h2>Algunos de mis trabajos</h2>
+      <p>Una selección de proyectos recientes. Cada miniatura se reemplaza por el video real al cargar tus entregas.</p>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <button class="filter-chip active" data-filter="all">Todos</button>
+      <button class="filter-chip" data-filter="reels">Reels</button>
+      <button class="filter-chip" data-filter="tiktok">TikTok</button>
+      <button class="filter-chip" data-filter="publicidad">Publicidad</button>
+      <button class="filter-chip" data-filter="videoclips">Videoclips</button>
+      <button class="filter-chip" data-filter="emprendimientos">Emprendimientos</button>
+      <button class="filter-chip" data-filter="ia">Contenido con IA</button>
+      <button class="filter-chip" data-filter="landing">Landing Pages</button>
+      <button class="filter-chip" data-filter="web">Páginas web</button>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<section class="pricing" id="precios">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-kicker">Precios de edición</div>
+      <h2>Un precio claro para cada formato</h2>
+      <p>Todos los paquetes incluyen edición dinámica, música y subtítulos. La voz en off y el audio profesional se cotizan aparte según el proyecto.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-tag">Video 30 segundos</div>
+        <h3>Formato corto</h3>
+        <div class="price-amount">US$10</div>
+        <ul>
+          <li>Edición dinámica</li>
+          <li>Efectos</li>
+          <li>Filtros</li>
+          <li>Transiciones</li>
+          <li>Música</li>
+          <li>Subtítulos</li>
+        </ul>
+        <a href="#contacto" class="btn btn-ghost">Quiero editar mi video</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tag">Video 1 minuto</div>
+        <h3>Formato estándar</h3>
+        <div class="price-amount">US$15</div>
+        <ul>
+          <li>Edición profesional</li>
+          <li>Efectos y filtros</li>
+          <li>Transiciones dinámicas</li>
+          <li>Música</li>
+          <li>Subtítulos</li>
+          <li>Animaciones</li>
+        </ul>
+        <a href="#contacto" class="btn btn-primary">Quiero editar mi video</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tag">Video de 2 a 4 minutos</div>
+        <h3>Formato extendido</h3>
+        <div class="price-amount">US$25</div>
+        <ul>
+          <li>Edición completa</li>
+          <li>Efectos visuales</li>
+          <li>Filtros y transiciones</li>
+          <li>Animaciones</li>
+          <li>Música y subtítulos</li>
+          <li>Edición dinámica</li>
+        </ul>
+        <a href="#contacto" class="btn btn-ghost">Quiero editar mi video</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contacto">
+  <div class="wrap">
+    <div class="contact-inner">
+      <h2>¿Tenés una idea?<br>Hagámosla realidad.</h2>
+      <p class="lead">Contame qué necesitás y te ayudo a convertir tu idea en contenido profesional — desde la edición hasta la voz en off.</p>
+      <div class="contact-links">
+        <a href="https://wa.me/5491124921755" class="btn btn-primary">WhatsApp</a>
+        <a href="https://www.instagram.com/reng_renzo/?hl=es-la" class="btn btn-ghost">Instagram</a>
+        <a href="mailto:renzocontrera@gmail.com" class="btn btn-ghost">Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>© <span id="year"></span> Renzo Contreras — Editor de video &amp; creador digital.</p>
+    <p>Buenos Aires, Argentina</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Nav toggle
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+// Hero SVG timeline animation (single orchestrated moment)
+(function(){
+  const svg = document.getElementById('heroSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const rows = 5;
+  const colors = ['#4fe0c7', '#ff4d4d', '#8d8fa3'];
+  for(let r=0; r<rows; r++){
+    const y = 90 + r*110;
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1','0'); line.setAttribute('x2','1180');
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','rgba(237,236,243,0.06)');
+    svg.appendChild(line);
+    let x = -200 + (r%3)*140;
+    while(x < 1400){
+      const w = 60 + Math.random()*120;
+      const rect = document.createElementNS(ns,'rect');
+      rect.setAttribute('x', x); rect.setAttribute('y', y-16);
+      rect.setAttribute('width', w); rect.setAttribute('height', 32);
+      rect.setAttribute('rx', 3);
+      rect.setAttribute('fill', colors[r % colors.length]);
+      rect.setAttribute('opacity', 0.10 + Math.random()*0.08);
+      svg.appendChild(rect);
+      x += w + 14;
+    }
+  }
+  const playhead = document.createElementNS(ns,'line');
+  playhead.setAttribute('x1','120'); playhead.setAttribute('x2','120');
+  playhead.setAttribute('y1','40'); playhead.setAttribute('y2','620');
+  playhead.setAttribute('stroke','#ff4d4d'); playhead.setAttribute('stroke-width','1.5');
+  playhead.setAttribute('opacity','0.5');
+  svg.appendChild(playhead);
+  let pos = 120;
+  function animate(){
+    pos += 1.1;
+    if(pos > 1180) pos = -20;
+    playhead.setAttribute('x1', pos); playhead.setAttribute('x2', pos);
+    requestAnimationFrame(animate);
+  }
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    requestAnimationFrame(animate);
+  }
+})();
+
+// Portfolio gallery — Video 1 a Video 9 (Video 9 pendiente de subir)
+const projects = [
+  {title:'Video 1', cat:'publicidad', label:'Publicidad', src:'video1.mp4'},
+  {title:'Video 2', cat:'emprendimientos', label:'Emprendimientos', src:'video2.mp4'},
+  {title:'Video 3', cat:'ia', label:'Contenido con IA', src:'video3.mp4'},
+  {title:'Video 4', cat:'reels', label:'Reels', src:'video4.mp4'},
+  {title:'Video 5', cat:'tiktok', label:'TikTok', src:'video5.mp4'},
+  {title:'Video 6', cat:'landing', label:'Landing Pages', src:'video6.mp4'},
+  {title:'Video 7', cat:'videoclips', label:'Videoclips', src:'video7.mp4'},
+  {title:'Video 8', cat:'web', label:'Páginas web', src:'video8.mp4'},
+  {title:'Video 9', cat:'ia', label:'Contenido con IA', src:'video9.mp4'},
+  {title:'Video 10', cat:'ia', label:'Contenido con IA', src:'video10.mp4'},
+  {title:'Video 11', cat:'ia', label:'Contenido con IA', src:'video11.mp4'},
+  {title:'Videoclip 1', cat:'videoclips', label:'Videoclips', youtube:'fKkaO4cxcGg'},
+  {title:'Videoclip 2', cat:'videoclips', label:'Videoclips', youtube:'M9hXXundaFk'},
+  {title:'Videoclip 3', cat:'videoclips', label:'Videoclips', youtube:'ZLd6vnRggUA'},
+  {title:'Videoclip 4', cat:'videoclips', label:'Videoclips', youtube:'j2fbd0OxtrA'},
+  {title:'Videoclip 5', cat:'videoclips', label:'Videoclips', youtube:'amSaZ_KPAd0'},
+  {title:'Videoclip 6', cat:'videoclips', label:'Videoclips', youtube:'-TtvyBzQ7N8'},
+];
+const gallery = document.getElementById('gallery');
+function renderGallery(filter){
+  gallery.innerHTML = '';
+  projects.filter(p => filter==='all' || p.cat===filter).forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    if(p.youtube){
+      item.innerHTML = `
+        <span class="cat">${p.label}</span>
+        <img src="https://img.youtube.com/vi/${p.youtube}/hqdefault.jpg" alt="${p.title}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
+        <div class="fake-thumb"><div class="play-ring"></div></div>
+        <div class="overlay"><h4>${p.title}</h4><span>Ver en YouTube</span></div>
+      `;
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => {
+        window.open('https://www.youtube.com/watch?v=' + p.youtube, '_blank');
+      });
+    } else if(p.src){
+      item.classList.add('has-controls');
+      item.innerHTML = `
+        <span class="cat">${p.label}</span>
+        <span class="title-top">${p.title}</span>
+        <video src="${p.src}" preload="metadata" playsinline controls></video>
+      `;
+    } else {
+      item.innerHTML = `
+        <span class="cat">${p.label}</span>
+        <div class="fake-thumb"><div class="play-ring"></div></div>
+        <div class="overlay"><h4>${p.title}</h4><span>Próximamente</span></div>
+      `;
+    }
+    gallery.appendChild(item);
+  });
+}
+renderGallery('all');
+document.getElementById('filterRow').addEventListener('click', (e) => {
+  const chip = e.target.closest('.filter-chip');
+  if(!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  renderGallery(chip.dataset.filter);
+});
+</script>
+</body>
+</html>
